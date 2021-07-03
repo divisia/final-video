@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "final-video",
+    "slug": "final-video",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "final-video"
+}
