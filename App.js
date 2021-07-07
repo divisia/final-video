@@ -5,9 +5,11 @@ import { Audio, Video } from 'expo-av';
 import DomSelector from 'react-native-dom-parser';
 
 
-function qCodeCheck(i) {
-  return i.length == 6
-}
+const ProxyServer = 'https://dry-ravine-43926.herokuapp.com/'
+const SourceAddress = 'http://interaktif.final.com.tr/ajaxpro/_Default,App_Web_g3is2mij.ashx'
+
+
+const qCodeCheck = i => i.length == 6 
 
 
 export default class App extends Component {
@@ -20,7 +22,7 @@ export default class App extends Component {
   onTextChange(e) {
     if (qCodeCheck(e)) {
       console.log('Fetching for', e)
-      fetch('https://cors-anywhere.herokuapp.com/http://interaktif.final.com.tr/ajaxpro/_Default,App_Web_g3is2mij.ashx', {
+      fetch(`${ProxyServer}${SourceeAddress}`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
