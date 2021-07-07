@@ -1,14 +1,20 @@
 {
   "expo": {
-    "name": "final-video",
+    "name": "Final Video Çözüm",
     "slug": "final-video",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
     ],
     "android": {
-      "package": "finalvideo.com"
+      "package": "xyz.omerselcuk"
     }
   },
-  "name": "final-video"
+  "name": "Final Video Çözüm",
+  "icon": "assets/icon.jpeg",
+  "android": {
+    "config": {
+      "googleMobileAdsAppId": "ca-app-pub-1616332876405841~5460568170"
+    }
+  }
 }

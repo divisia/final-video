@@ -4,6 +4,7 @@ import { Keyboard, StyleSheet, Text, View, TextInput, Dimensions } from 'react-n
 import { Video } from 'expo-av';
 import { Header, LinearProgress } from 'react-native-elements';
 import { ValidateCode, EvaluateCode } from './content'
+import BannerAd from './ads';
 
 
 
@@ -32,10 +33,14 @@ export default class App extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Header containerStyle={{ backgroundColor:'#a8f'}}
+      <View style={styles.container}><View style={{ 'flex': 1, justifyContent: 'space-around' }}>
+        <Header containerStyle={{ backgroundColor: '#a8f' }}
           centerComponent={{ text: 'Final Video Çözüm', style: { fontSize: 20, color: '#fff' } }}
         />
+        <BannerAd />
+        </View>
+
+
         <View style={styles.inputContainer}><Text>Soru kodunu girin</Text>
           <TextInput
             onChangeText={this.onTextChange.bind(this)}
