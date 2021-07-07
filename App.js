@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Dimensions } from 'react-native';
 import { Audio, Video } from 'expo-av';
+import DomSelector from 'react-native-dom-parser';
 
 
 function qCodeCheck(i) {
@@ -17,8 +18,8 @@ export default class App extends Component {
   }
 
   onTextChange(e) {
-    if (qCodeCheck(e.target.value)) {
-      e.target.style.borderColor = 'green'
+    if (qCodeCheck(e)) {
+      console.log('Fetching for', e)
       fetch('https://cors-anywhere.herokuapp.com/http://interaktif.final.com.tr/ajaxpro/_Default,App_Web_g3is2mij.ashx', {
         method: 'POST',
         headers: {
@@ -27,23 +28,26 @@ export default class App extends Component {
           'Access-Control-Allow-Origin': '*',
           'X-AjaxPro-Method': 'VideoGetir',
           'Set-GPC': '1',
-          'Cookie': 'ASP.NET_SessionId=4moopmq1x4ljaodkncrygdix'
+          'Cookie': 'ASP.NET_SessionId=4moopmq1x4ljaodkncrygdix',
+          'Origin': 'example.com'
         },
 
         body: JSON.stringify({
-          videoSifre: e.target.value,
+          videoSifre: e,
         })
       })
-        .then(response => response.json())
+        .then(response => { console.log(JSON.stringify(response)); return response.json() })
         .then(response => {
+          console.log(response)
           const srcText = response.value
-          const dom = new DOMParser().parseFromString('<div>' + srcText + '</div>', "text/html").children[0];
-          const src = dom.querySelector('source').attributes.src.value
+          const dom = DomSelector('<div>' + srcText + '</div>');
+          const sourceTag = dom.getElementsByTagName('source')[0]
+          console.log(sourceTag.attributes.src)
+          const src = sourceTag.attributes.src
           this.setState({ 'videoSource': 'http://interaktif.final.com.tr' + src.slice(1) })
         })
         .catch((e) => { console.log(e) })
     }
-    else { e.target.style.borderColor = 'red' }
   }
 
   render() {
@@ -52,9 +56,9 @@ export default class App extends Component {
     return (
       <View style={styles.container}>
         <Text>Final Video Çözüm</Text>
-        <TextInput onChange={this.onTextChange.bind(this)} style={styles.input}></TextInput>
+        <TextInput onChangeText={this.onTextChange.bind(this)} style={styles.input}></TextInput>
 
-        <Video
+        {this.state.videoSource?<Video
           ref={video}
           style={styles.video}
           source={{
@@ -62,8 +66,7 @@ export default class App extends Component {
           }}
           useNativeControls
           resizeMode="contain"
-          
-        />
+        />:null}
         <StatusBar style="auto" />
       </View>
     );
@@ -79,12 +82,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
+    width: dimensions.width/2,
+    marginHorizontal: 'auto',
     borderColor: '#000',
     borderWidth: 1,
     padding: 5,
-    borderRadius: 2,
+    borderRadius: 10,
   },
   video: {
-    width: dimensions.width
+    borderColor: 'black',
+    borderWidth: 1,
+    width: dimensions.width,
   }
 });
