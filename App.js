@@ -2,55 +2,65 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View, TextInput, Dimensions } from 'react-native';
 import { Video } from 'expo-av';
+import { Header, LinearProgress } from 'react-native-elements';
 import { ValidateCode, EvaluateCode } from './content'
 
-
-
-
-const qCodeCheck = i => i.length == 6 
 
 
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { videoFound: false, videoSource: '' }
-    
+    this.state = { videoFound: false, videoSource: '', codeInvalid: false, loading: false }
+
   }
 
   onTextChange(e) {
-      if (ValidateCode(e)) {
-        EvaluateCode(e).then(src => {
-          if (src) {
-            this.setState({ videoFound: true, videoSource: src })
-            Keyboard.dismiss()
-          } else {
-            this.setState({ videoFound: false, videoSource: '' })
-          }
-        })
-
-      }
+    const text = e.toLowerCase();
+    if (ValidateCode(text)) {
+      this.setState({ 'loading': true, codeInvalid: false })
+      EvaluateCode(text).then(src => {
+        if (src) {
+          this.setState({ codeInvalid: false, videoSource: src, loading: false })
+          Keyboard.dismiss()
+        } else {
+          this.setState({ codeInvalid: true, videoSource: '', loading: false })
+        }
+      })
+    }
   }
-  
+
 
   render() {
-    console.log(this.state.videoSource)
     return (
       <View style={styles.container}>
-        <Text>Final Video Çözüm</Text>
-        <TextInput onChangeText={this.onTextChange.bind(this)} style={styles.input}></TextInput>
+        <Header containerStyle={{ backgroundColor:'#a8f'}}
+          centerComponent={{ text: 'Final Video Çözüm', style: { fontSize: 20, color: '#fff' } }}
+        />
+        <View style={styles.inputContainer}><Text>Soru kodunu girin</Text>
+          <TextInput
+            onChangeText={this.onTextChange.bind(this)}
+            style={styles.input}
+            maxLength={6}
+            placeholder="GJI3RC">
+          </TextInput>
+        </View>
 
-        {this.state.videoSource?
-        <Video
-        source={{ uri: this.state.videoSource }}
-        rate={1.0}
-        volume={1.0}
-        isMuted={false}
-        resizeMode="cover"
-        shouldPlay
-        useNativeControls
-        style={{ width: 300, height: 300 }}
-        /> 
-        :null}
+        {this.state.loading ? <LinearProgress color='#a8f' /> : null}
+
+        {this.state.videoSource ?
+          <Video
+            source={{ uri: this.state.videoSource }}
+            rate={1.0}
+            volume={1.0}
+            isMuted={false}
+            resizeMode="contain"
+            shouldPlay
+            useNativeControls
+            style={styles.video}
+          />
+          : (this.state.codeInvalid ?
+            <Text>Kod hatalı</Text>
+            : null)}
         <StatusBar style="auto" />
       </View>
     );
@@ -63,19 +73,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: dimensions.width,
+    height: dimensions.height,
   },
   input: {
-    width: dimensions.width/2,
+    width: 22 * 6,
+    margin: 30,
     marginHorizontal: 'auto',
-    borderColor: '#000',
+    borderColor: '#aaa',
     borderWidth: 1,
     padding: 5,
-    borderRadius: 10,
+    borderRadius: 1,
+    fontSize: 30,
+    fontFamily: 'monospace',
+    textAlign: 'center',
+  },
+  inputContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   video: {
-    borderColor: 'black',
-    borderWidth: 1,
+    bottom: 0,
+    left: 0,
+    // borderColor: 'black',
+    // borderWidth: 1,
+    // borderRadius: 5,
+    marginTop: 'auto',
+    height: dimensions.width * (3 / 4),
     width: dimensions.width,
   }
 });
